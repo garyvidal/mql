@@ -1,0 +1,130 @@
+mql ::= mqlExpr EOF
+mqlExpr ::=
+	( andExpr | orExpr | notExpr | andNotExpr | nearExpr | boostExpr | fragmentExpr | propertyExpr 
+	| equalExpr | equalExpr | notEqualExpr | betweenExpr | matchExpr | containsExpr | valueExpr | dirExpr | documentExpr | collectionExpr | geospatialExpr|rangeExpr)
+andExpr      ::=  'and'    '(' mqlExpr? (',' mqlExpr)* (',' andParam)* ')'
+orExpr       ::=  'or'     '(' mqlExpr? (',' mqlExpr)* ')'
+notExpr      ::=  'not'    '(' mqlExpr ')' 
+andNotExpr   ::=  'andnot' '(' mqlExpr (',' mqlExpr)  ')'
+boostExpr    ::= 'boost'  '(' mqlExpr (',' mqlExpr)  ')'
+fragmentExpr ::= ('frag'|'fragment') '(' mqlExpr ')'
+propertyExpr ::= ('prop'|'property') '(' mqlExpr ')'
+nearExpr     ::= ('nr' | 'near')   '(' mqlExpr (',' mqlExpr) (',' nearParam )*  ')'
+dirExpr          ::= ('dir'  | 'directory')  '(' stringValue (',' stringValue)* (',' depthParam)* ')'
+documentExpr 	 ::= ('doc'  | 'document')   '(' stringValue (',' stringValue)* ')'
+collectionExpr   ::= ('coll' | 'collection') '(' stringValue (',' stringValue)* ')'
+
+equalExpr    ::= inExpr ('eq'|'equal')     '(' tokenExpr  (',' tokenExpr)* (',' equalParam)*  ')'
+notEqualExpr ::= inExpr ('ne'|'notequal')  '(' tokenExpr  (',' tokenExpr)* (',' equalParam)*  ')'
+betweenExpr  ::= inExpr ('bw'|'between')   '(' tokenExpr  (',' tokenExpr)  (',' betweenParam)* ')'
+matchExpr    ::= inExpr ('ma'|'matches')   '(' tokenExpr  (',' tokenExpr)* ')'
+containsExpr ::= inExpr ('cn'|'contains')  '(' tokenExpr  (',' tokenExpr)  ')'
+valueExpr    ::= inExpr ('val'|'value')    '(' tokenExpr  (',' tokenExpr)* ')'
+rangeExpr     ::= inExpr  rangeOperator '(' tokenExpr  (',' tokenExpr)* ')'
+
+geospatialExpr   
+	::= inExpr ('geo'|'geospatial') '(' regionValue (',' geoParams )*  ')'
+	
+regionValue ::=
+	pointExpr 
+	| multiPointExpr
+	| lineStringExpr
+	| multiLineStringExpr
+	| polygonExpr
+	| multiPolygonExpr
+	| geometryCollectionExpr
+	
+betweenParam ::= 
+	"inclusive"
+	"exclusive"
+
+andParam ::= 
+	orderParam
+
+tokenExpr  ::=
+      stringValue
+	| intValue
+	| floatValue
+	| dateValue
+	| dateTimeValue
+rangeOperator ::= ('ge'|'gt'|'le'|'lt')
+pointExpr ::= 
+	('POINT'|'PT') '(' pointValue ')'
+multiPointExpr ::= 
+	('MULTIPOINT'|'MP') '(' pointValue (',' pointValue)* ')'
+lineStringExpr ::=
+	('LINESTRING' | 'LS') '(' pointValue (',' pointValue)* ')'
+multiLineStringExpr ::=
+	('MULTILINESTRING'|'MLS') '('  ')' 
+polygonExpr ::=
+	('POLYGON' | 'PG') '('  polygonValue (',' polygonValue)* ')'
+multiPolygonExpr ::=
+	('MULTIPOLYGON'| 'MPG') '(' polygonValue (',' polygonValue)* ')'
+geometryCollectionExpr ::= 
+	('GEOMETRYCOLLECTION'| 'GC') '(' (',' (pointExpr |  multiPointExpr | lineStringExpr | multiLineStringExpr | polygonExpr | multiPolygonExpr))* ')'
+
+equalParam ::= 
+	collationParam
+    | minOccursParam
+	| maxOccursParam
+	| weightParam
+
+nearParam ::=
+	proximityParam
+	| orderParam
+geoParams ::= 
+	'coordinate-system' '=' ('wgs84')	
+collationParam ::=	'collation' '=' stringValue
+minOccursParam ::=  'minOccurs' '=' intValue
+maxOccursParam ::=  'maxOccurs' '=' intValue
+weightParam    ::=  'weight'    '=' floatValue
+proximityParam  ::=  ('p'|'proximity')   '=' intValue
+orderParam     ::=  ('ordered' | 'unordered')
+depthParam     ::=  
+	'infinity' 
+	| DIGIT+
+	
+<?TOKENS?>
+lineStringValue 
+	::= '(' pointValue (',' pointValue)* ')'
+polygonValue 
+	::= '(' pointValue (',' pointValue)* ')'
+pointValue 
+	::= DIGIT+ SP DIGIT+
+inExpr
+	::= ( internalPropertyName | propertyName ) ':'
+	| DQUOTE ( internalPropertyName | propertyName ) DQUOTE ':'
+internalPropertyName
+         ::= propertyName '.' propertyName
+propertyName
+         ::= ( ALPHA (ALPHA | DIGIT )*)	 
+stringValue
+         ::= DQUOTE ( '!' | [#-'] | [*-+] | [--9] | [;-<] | [#x3E-#x10FFFF] )+ DQUOTE
+floatValue
+         ::= ( '-' | '+' )? DIGIT* '.' DIGIT+
+		   /* ws: explicit */
+intValue
+         ::= ( '-' | '+' )? DIGIT+
+		   /* ws: explicit */
+dateTimeValue 
+          ::=  dateValue 'T' timeValue		 
+timeValue ::= hour ':' minute ':' second 'Z'? 
+dateValue ::= year '-' month '-' day
+year      ::= DIGIT DIGIT DIGIT DIGIT+
+month     ::= '0' DIGIT
+           | '1' [0-2]
+day       ::= [0-2] DIGIT
+           | '3' [0-1]
+hour     ::= [0-1] DIGIT
+           | '2' [0-3]
+minute   ::= [0-5] DIGIT
+second   ::= [0-5] DIGIT
+
+DIGIT ::= [0-9]
+
+DQUOTE ::= '"'
+SP ::= [#x0009#x000A#x000D#x0020]+
+/* ws: definition */
+ALPHA ::= [A-Za-z]
+EOF ::= $
+stringValue << intValue floatValue  dateValue "collation" "maxOccurs" "minOccurs" "weight"
