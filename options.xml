@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<options xmlns="http://marklogic.com/mql">  
+    <nodespec name="foo">
+        <element xmlns:_1="http://foo">_1:foo</element>
+        <element xmlns:_2="http://bar">_2:bar</element>
+        <option></option>
+        <option></option>
+    </nodespec>
+    <nodespec name="bar">
+        
+    </nodespec>
+</options>

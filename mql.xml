@@ -1,0 +1,932 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This file was generated on Thu Aug 1, 2013 13:35 (UTC-04) by REx v5.25 which is Copyright (c) 1979-2013 by Gunther Rademacher <grd@gmx.net> -->
+<!-- REx command line: mql.ebnf -backtrack -tree -xml -->
+<g:grammar xmlns:g="http://www.w3.org/2001/03/XPath/grammar">
+  <g:production name="mql">
+    <g:ref name="mqlExpr"/>
+    <g:ref name="EOF"/>
+  </g:production>
+  <g:production queued="1" name="mqlExpr">
+    <g:choice LL1-conflict="inExpr" LL2-conflict="inExpr~eq inExpr~equal" LL3-conflict="inExpr~equal~( inExpr~eq~(" queued="1">
+      <g:ref if="and" queued="1" name="andExpr"/>
+      <g:ref if="or" queued="1" name="orExpr"/>
+      <g:ref if="not" queued="1" name="notExpr"/>
+      <g:ref if="andnot" queued="1" name="andNotExpr"/>
+      <g:ref if="near nr" queued="1" name="nearExpr"/>
+      <g:ref if="boost" queued="1" name="boostExpr"/>
+      <g:ref if="frag fragment" queued="1" name="fragmentExpr"/>
+      <g:ref if="prop property" queued="1" name="propertyExpr"/>
+      <g:ref if="" queued="1" name="equalExpr"/>
+      <g:ref if="" queued="1" name="equalExpr"/>
+      <g:ref if="inExpr~ne inExpr~notequal" queued="1" name="notEqualExpr"/>
+      <g:ref if="inExpr~between inExpr~bw" queued="1" name="betweenExpr"/>
+      <g:ref if="inExpr~ma inExpr~matches" queued="1" name="matchExpr"/>
+      <g:ref if="inExpr~cn inExpr~contains" queued="1" name="containsExpr"/>
+      <g:ref if="inExpr~val inExpr~value" queued="1" name="valueExpr"/>
+      <g:ref if="dir directory" queued="1" name="dirExpr"/>
+      <g:ref if="doc document" queued="1" name="documentExpr"/>
+      <g:ref if="coll collection" queued="1" name="collectionExpr"/>
+      <g:ref if="inExpr~geo inExpr~geospatial" queued="1" name="geospatialExpr"/>
+      <g:ref default="" queued="1" name="rangeExpr"/>
+      <g:ref if="inExpr~w inExpr~word" queued="1" name="wordExpr"/>
+      <g:ref if="stringValue" queued="1" name="stringValue"/>
+    </g:choice>
+  </g:production>
+  <g:production queued="1" name="andExpr">
+    <g:string queued="1">and</g:string>
+    <g:string>(</g:string>
+    <g:optional>
+      <g:ref ifnot=") ," queued="1" name="mqlExpr"/>
+    </g:optional>
+    <g:zeroOrMore LL1-conflict=",">
+      <g:string ifnot=") ,~ordered ,~unordered" queued="1">,</g:string>
+      <g:ref name="mqlExpr"/>
+    </g:zeroOrMore>
+    <g:zeroOrMore>
+      <g:string if="," queued="1">,</g:string>
+      <g:ref name="andParam"/>
+    </g:zeroOrMore>
+    <g:string queued="1">)</g:string>
+  </g:production>
+  <g:production queued="1" name="orExpr">
+    <g:string queued="1">or</g:string>
+    <g:string>(</g:string>
+    <g:optional>
+      <g:ref ifnot=") ," queued="1" name="mqlExpr"/>
+    </g:optional>
+    <g:zeroOrMore>
+      <g:string if="," queued="1">,</g:string>
+      <g:ref name="mqlExpr"/>
+    </g:zeroOrMore>
+    <g:string queued="1">)</g:string>
+  </g:production>
+  <g:production queued="1" name="notExpr">
+    <g:string queued="1">not</g:string>
+    <g:string>(</g:string>
+    <g:ref name="mqlExpr"/>
+    <g:string>)</g:string>
+  </g:production>
+  <g:production queued="1" name="andNotExpr">
+    <g:string queued="1">andnot</g:string>
+    <g:string>(</g:string>
+    <g:ref name="mqlExpr"/>
+    <g:string>,</g:string>
+    <g:ref name="mqlExpr"/>
+    <g:string>)</g:string>
+  </g:production>
+  <g:production queued="1" name="nearExpr">
+    <g:choice queued="1">
+      <g:string if="nr" queued="1">nr</g:string>
+      <g:string default="" queued="1">near</g:string>
+    </g:choice>
+    <g:string>(</g:string>
+    <g:ref name="mqlExpr"/>
+    <g:string>,</g:string>
+    <g:ref name="mqlExpr"/>
+    <g:zeroOrMore>
+      <g:string if="," queued="1">,</g:string>
+      <g:ref name="nearParam"/>
+    </g:zeroOrMore>
+    <g:string queued="1">)</g:string>
+  </g:production>
+  <g:production queued="1" name="boostExpr">
+    <g:string queued="1">boost</g:string>
+    <g:string>(</g:string>
+    <g:ref name="mqlExpr"/>
+    <g:string>,</g:string>
+    <g:ref name="mqlExpr"/>
+    <g:string>)</g:string>
+  </g:production>
+  <g:production queued="1" name="fragmentExpr">
+    <g:choice queued="1">
+      <g:string if="frag" queued="1">frag</g:string>
+      <g:string default="" queued="1">fragment</g:string>
+    </g:choice>
+    <g:string>(</g:string>
+    <g:ref name="mqlExpr"/>
+    <g:string>)</g:string>
+  </g:production>
+  <g:production queued="1" name="propertyExpr">
+    <g:choice queued="1">
+      <g:string if="prop" queued="1">prop</g:string>
+      <g:string default="" queued="1">property</g:string>
+    </g:choice>
+    <g:string>(</g:string>
+    <g:ref name="mqlExpr"/>
+    <g:string>)</g:string>
+  </g:production>
+  <g:production queued="1" name="dirExpr">
+    <g:choice queued="1">
+      <g:string if="dir" queued="1">dir</g:string>
+      <g:string default="" queued="1">directory</g:string>
+    </g:choice>
+    <g:string>(</g:string>
+    <g:ref name="stringValue"/>
+    <g:zeroOrMore LL1-conflict=",">
+      <g:string if=",~stringValue" queued="1">,</g:string>
+      <g:ref name="stringValue"/>
+    </g:zeroOrMore>
+    <g:optional queued="1">
+      <g:string if="," queued="1">,</g:string>
+      <g:ref name="depthParam"/>
+    </g:optional>
+    <g:string>)</g:string>
+  </g:production>
+  <g:production queued="1" name="documentExpr">
+    <g:choice queued="1">
+      <g:string if="doc" queued="1">doc</g:string>
+      <g:string default="" queued="1">document</g:string>
+    </g:choice>
+    <g:string>(</g:string>
+    <g:ref name="stringValue"/>
+    <g:zeroOrMore>
+      <g:string if="," queued="1">,</g:string>
+      <g:ref name="stringValue"/>
+    </g:zeroOrMore>
+    <g:string queued="1">)</g:string>
+  </g:production>
+  <g:production queued="1" name="collectionExpr">
+    <g:choice queued="1">
+      <g:string if="coll" queued="1">coll</g:string>
+      <g:string default="" queued="1">collection</g:string>
+    </g:choice>
+    <g:string>(</g:string>
+    <g:ref name="stringValue"/>
+    <g:zeroOrMore>
+      <g:string if="," queued="1">,</g:string>
+      <g:ref name="stringValue"/>
+    </g:zeroOrMore>
+    <g:string queued="1">)</g:string>
+  </g:production>
+  <g:production queued="1" name="equalExpr">
+    <g:ref queued="1" name="inExpr"/>
+    <g:choice>
+      <g:string if="eq" queued="1">eq</g:string>
+      <g:string default="" queued="1">equal</g:string>
+    </g:choice>
+    <g:string>(</g:string>
+    <g:ref name="tokenExpr"/>
+    <g:zeroOrMore LL1-conflict=",">
+      <g:string if=",~dateTimeValue ,~dateValue ,~floatValue ,~intValue ,~stringValue" queued="1">,</g:string>
+      <g:ref name="tokenExpr"/>
+    </g:zeroOrMore>
+    <g:optional queued="1">
+      <g:string if="," queued="1">,</g:string>
+      <g:ref name="equalParams"/>
+    </g:optional>
+    <g:string>)</g:string>
+  </g:production>
+  <g:production queued="1" name="notEqualExpr">
+    <g:ref queued="1" name="inExpr"/>
+    <g:choice>
+      <g:string if="ne" queued="1">ne</g:string>
+      <g:string default="" queued="1">notequal</g:string>
+    </g:choice>
+    <g:string>(</g:string>
+    <g:ref name="tokenExpr"/>
+    <g:zeroOrMore LL1-conflict=",">
+      <g:string if=",~dateTimeValue ,~dateValue ,~floatValue ,~intValue ,~stringValue" queued="1">,</g:string>
+      <g:ref name="tokenExpr"/>
+    </g:zeroOrMore>
+    <g:optional queued="1">
+      <g:string if="," queued="1">,</g:string>
+      <g:ref name="equalParams"/>
+    </g:optional>
+    <g:string>)</g:string>
+  </g:production>
+  <g:production queued="1" name="betweenExpr">
+    <g:ref queued="1" name="inExpr"/>
+    <g:choice>
+      <g:string if="bw" queued="1">bw</g:string>
+      <g:string default="" queued="1">between</g:string>
+    </g:choice>
+    <g:string>(</g:string>
+    <g:ref name="tokenExpr"/>
+    <g:string>,</g:string>
+    <g:ref name="tokenExpr"/>
+    <g:optional>
+      <g:string if="," queued="1">,</g:string>
+      <g:ref name="betweenParams"/>
+    </g:optional>
+    <g:string>)</g:string>
+  </g:production>
+  <g:production queued="1" name="matchExpr">
+    <g:ref queued="1" name="inExpr"/>
+    <g:choice>
+      <g:string if="ma" queued="1">ma</g:string>
+      <g:string default="" queued="1">matches</g:string>
+    </g:choice>
+    <g:string>(</g:string>
+    <g:ref name="tokenExpr"/>
+    <g:zeroOrMore>
+      <g:string if="," queued="1">,</g:string>
+      <g:ref name="tokenExpr"/>
+    </g:zeroOrMore>
+    <g:string queued="1">)</g:string>
+  </g:production>
+  <g:production queued="1" name="containsExpr">
+    <g:ref queued="1" name="inExpr"/>
+    <g:choice>
+      <g:string if="cn" queued="1">cn</g:string>
+      <g:string default="" queued="1">contains</g:string>
+    </g:choice>
+    <g:string>(</g:string>
+    <g:ref name="tokenExpr"/>
+    <g:string>,</g:string>
+    <g:ref name="tokenExpr"/>
+    <g:string>)</g:string>
+  </g:production>
+  <g:production queued="1" name="valueExpr">
+    <g:ref queued="1" name="inExpr"/>
+    <g:choice>
+      <g:string if="val" queued="1">val</g:string>
+      <g:string default="" queued="1">value</g:string>
+    </g:choice>
+    <g:string>(</g:string>
+    <g:ref name="tokenExpr"/>
+    <g:zeroOrMore LL1-conflict=",">
+      <g:string if=",~dateTimeValue ,~dateValue ,~floatValue ,~intValue ,~stringValue" queued="1">,</g:string>
+      <g:ref name="tokenExpr"/>
+    </g:zeroOrMore>
+    <g:optional queued="1">
+      <g:string if="," queued="1">,</g:string>
+      <g:ref name="valueParams"/>
+    </g:optional>
+    <g:string>)</g:string>
+  </g:production>
+  <g:production queued="1" name="wordExpr">
+    <g:ref queued="1" name="inExpr"/>
+    <g:choice>
+      <g:string if="w" queued="1">w</g:string>
+      <g:string default="" queued="1">word</g:string>
+    </g:choice>
+    <g:string>(</g:string>
+    <g:ref name="stringValue"/>
+    <g:zeroOrMore LL1-conflict=",">
+      <g:string if=",~stringValue" queued="1">,</g:string>
+      <g:ref name="stringValue"/>
+    </g:zeroOrMore>
+    <g:optional queued="1">
+      <g:string if="," queued="1">,</g:string>
+      <g:ref name="wordParams"/>
+    </g:optional>
+    <g:string>)</g:string>
+  </g:production>
+  <g:production queued="1" name="rangeExpr">
+    <g:ref queued="1" name="inExpr"/>
+    <g:ref name="rangeOperator"/>
+    <g:string>(</g:string>
+    <g:ref name="tokenExpr"/>
+    <g:zeroOrMore LL1-conflict=",">
+      <g:string if=",~dateTimeValue ,~dateValue ,~floatValue ,~intValue ,~stringValue" queued="1">,</g:string>
+      <g:ref name="tokenExpr"/>
+    </g:zeroOrMore>
+    <g:optional queued="1">
+      <g:string if="," queued="1">,</g:string>
+      <g:ref name="rangeParam"/>
+    </g:optional>
+    <g:string>)</g:string>
+  </g:production>
+  <g:production queued="1" name="equalParams">
+    <g:choice queued="1">
+      <g:ref default="" queued="1" name="equalParam"/>
+      <g:sequence if="(" queued="1">
+        <g:string queued="1">(</g:string>
+        <g:ref name="equalParam"/>
+        <g:oneOrMore>
+          <g:string if=",">,</g:string>
+          <g:ref name="equalParam"/>
+        </g:oneOrMore>
+        <g:string queued="1">)</g:string>
+      </g:sequence>
+    </g:choice>
+  </g:production>
+  <g:production queued="1" name="equalParam">
+    <g:choice queued="1">
+      <g:ref if="collation" queued="1" name="collationParam"/>
+      <g:ref if="min minOccurs" queued="1" name="minOccursParam"/>
+      <g:ref default="" queued="1" name="maxOccursParam"/>
+      <g:ref if="weight" queued="1" name="weightParam"/>
+    </g:choice>
+  </g:production>
+  <g:production name="nearParams">
+    <g:choice>
+      <g:ref default="" queued="1" name="nearParam"/>
+      <g:sequence if="(" queued="1">
+        <g:string queued="1">(</g:string>
+        <g:ref name="nearParam"/>
+        <g:oneOrMore>
+          <g:string if=",">,</g:string>
+          <g:ref name="nearParam"/>
+        </g:oneOrMore>
+        <g:string queued="1">)</g:string>
+      </g:sequence>
+    </g:choice>
+  </g:production>
+  <g:production queued="1" name="nearParam">
+    <g:choice queued="1">
+      <g:ref if="p proximity" queued="1" name="proximityParam"/>
+      <g:ref default="" queued="1" name="orderParam"/>
+    </g:choice>
+  </g:production>
+  <g:production name="geoParams">
+    <g:choice>
+      <g:ref default="" queued="1" name="geoParam"/>
+      <g:sequence if="(" queued="1">
+        <g:string queued="1">(</g:string>
+        <g:ref name="geoParam"/>
+        <g:oneOrMore>
+          <g:string if=",">,</g:string>
+          <g:ref name="geoParam"/>
+        </g:oneOrMore>
+        <g:string queued="1">)</g:string>
+      </g:sequence>
+    </g:choice>
+  </g:production>
+  <g:production queued="1" name="geoParam">
+    <g:choice queued="1">
+      <g:sequence default="" queued="1">
+      </g:sequence>
+      <g:ref if="weight" queued="1" name="weightParam"/>
+      <g:sequence if="coordinate-system" queued="1">
+        <g:string queued="1">coordinate-system</g:string>
+        <g:string>=</g:string>
+        <g:string>wgs84</g:string>
+      </g:sequence>
+      <g:sequence if="units" queued="1">
+        <g:string queued="1">units</g:string>
+        <g:string>=</g:string>
+        <g:choice>
+          <g:string if="miles" queued="1">miles</g:string>
+          <g:string default="" queued="1">feet</g:string>
+        </g:choice>
+      </g:sequence>
+      <g:string if="boundaries-included" queued="1">boundaries-included</g:string>
+      <g:string if="boundaries-excluded" queued="1">boundaries-excluded</g:string>
+      <g:string if="boundaries-latitude-excluded" queued="1">boundaries-latitude-excluded</g:string>
+      <g:string if="boundaries-longitude-excluded" queued="1">boundaries-longitude-excluded</g:string>
+      <g:string if="boundaries-south-excluded" queued="1">boundaries-south-excluded</g:string>
+      <g:string if="boundaries-west-excluded" queued="1">boundaries-west-excluded</g:string>
+      <g:string if="boundaries-north-excluded" queued="1">boundaries-north-excluded</g:string>
+      <g:string if="boundaries-east-excluded" queued="1">boundaries-east-excluded</g:string>
+      <g:string if="boundaries-circle-excluded" queued="1">boundaries-circle-excluded</g:string>
+      <g:string if="cached" queued="1">cached</g:string>
+      <g:string if="uncached" queued="1">uncached</g:string>
+      <g:string if="synonym" queued="1">synonym</g:string>
+    </g:choice>
+  </g:production>
+  <g:production name="rangeParams">
+    <g:choice>
+      <g:ref default="" queued="1" name="rangeParam"/>
+      <g:sequence if="(" queued="1">
+        <g:string queued="1">(</g:string>
+        <g:ref name="rangeParam"/>
+        <g:oneOrMore>
+          <g:string if=",">,</g:string>
+          <g:ref name="rangeParam"/>
+        </g:oneOrMore>
+        <g:string queued="1">)</g:string>
+      </g:sequence>
+    </g:choice>
+  </g:production>
+  <g:production queued="1" name="rangeParam">
+    <g:choice queued="1">
+      <g:ref if="collation" queued="1" name="collationParam"/>
+      <g:ref if="min minOccurs" queued="1" name="minOccursParam"/>
+      <g:ref default="" queued="1" name="maxOccursParam"/>
+      <g:string if="cached" queued="1">cached</g:string>
+      <g:string if="uncached" queued="1">uncached</g:string>
+      <g:string if="synonym" queued="1">synonym</g:string>
+    </g:choice>
+  </g:production>
+  <g:production queued="1" name="valueParams">
+    <g:choice queued="1">
+      <g:ref default="" queued="1" name="valueParam"/>
+      <g:sequence if="(" queued="1">
+        <g:string queued="1">(</g:string>
+        <g:ref name="valueParam"/>
+        <g:oneOrMore>
+          <g:string if=",">,</g:string>
+          <g:ref name="valueParam"/>
+        </g:oneOrMore>
+        <g:string queued="1">)</g:string>
+      </g:sequence>
+    </g:choice>
+  </g:production>
+  <g:production queued="1" name="valueParam">
+    <g:choice queued="1">
+      <g:string if="case-sensitive" queued="1">case-sensitive</g:string>
+      <g:string if="case-insensitive" queued="1">case-insensitive</g:string>
+      <g:string if="diacritic-sensitive" queued="1">diacritic-sensitive</g:string>
+      <g:string if="diacritic-insensitive" queued="1">diacritic-insensitive</g:string>
+      <g:string if="punctuation-sensitive" queued="1">punctuation-sensitive</g:string>
+      <g:string if="punctuation-insensitive" queued="1">punctuation-insensitive</g:string>
+      <g:string if="whitespace-sensitive" queued="1">whitespace-sensitive</g:string>
+      <g:string if="whitespace-insensitive" queued="1">whitespace-insensitive</g:string>
+      <g:string if="stemmed" queued="1">stemmed</g:string>
+      <g:string if="unstemmed" queued="1">unstemmed</g:string>
+      <g:string if="wildcarded" queued="1">wildcarded</g:string>
+      <g:string if="unwildcarded" queued="1">unwildcarded</g:string>
+      <g:string if="exact" queued="1">exact</g:string>
+      <g:ref if="lang" queued="1" name="langParam"/>
+      <g:ref if="min minOccurs" queued="1" name="minOccursParam"/>
+      <g:ref default="" queued="1" name="maxOccursParam"/>
+      <g:string if="synonym" queued="1">synonym</g:string>
+    </g:choice>
+  </g:production>
+  <g:production queued="1" name="wordParams">
+    <g:choice queued="1">
+      <g:ref default="" queued="1" name="wordParam"/>
+      <g:sequence if="(" queued="1">
+        <g:string queued="1">(</g:string>
+        <g:ref name="wordParam"/>
+        <g:oneOrMore>
+          <g:string if=",">,</g:string>
+          <g:ref name="wordParam"/>
+        </g:oneOrMore>
+        <g:string queued="1">)</g:string>
+      </g:sequence>
+    </g:choice>
+  </g:production>
+  <g:production queued="1" name="wordParam">
+    <g:choice queued="1">
+      <g:string if="case-sensitive" queued="1">case-sensitive</g:string>
+      <g:string if="case-insensitive" queued="1">case-insensitive</g:string>
+      <g:string if="diacritic-sensitive" queued="1">diacritic-sensitive</g:string>
+      <g:string if="diacritic-insensitive" queued="1">diacritic-insensitive</g:string>
+      <g:string if="punctuation-sensitive" queued="1">punctuation-sensitive</g:string>
+      <g:string if="punctuation-insensitive" queued="1">punctuation-insensitive</g:string>
+      <g:string if="whitespace-sensitive" queued="1">whitespace-sensitive</g:string>
+      <g:string if="whitespace-insensitive" queued="1">whitespace-insensitive</g:string>
+      <g:string if="stemmed" queued="1">stemmed</g:string>
+      <g:string if="unstemmed" queued="1">unstemmed</g:string>
+      <g:string if="wildcarded" queued="1">wildcarded</g:string>
+      <g:string if="unwildcarded" queued="1">unwildcarded</g:string>
+      <g:string if="exact" queued="1">exact</g:string>
+      <g:string if="synonym" queued="1">synonym</g:string>
+      <g:ref if="distance-weight" queued="1" name="distanceWeightParam"/>
+      <g:ref if="lang" queued="1" name="langParam"/>
+      <g:ref if="min minOccurs" queued="1" name="minOccursParam"/>
+      <g:ref default="" queued="1" name="maxOccursParam"/>
+    </g:choice>
+  </g:production>
+  <g:production queued="1" name="betweenParams">
+    <g:choice queued="1">
+      <g:string if="inclusive" queued="1">inclusive</g:string>
+      <g:string default="" queued="1">exclusive</g:string>
+    </g:choice>
+  </g:production>
+  <g:production queued="1" name="andParam">
+    <g:ref queued="1" name="orderParam"/>
+  </g:production>
+  <g:production queued="1" name="tokenExpr">
+    <g:choice queued="1">
+      <g:ref if="stringValue" queued="1" name="stringValue"/>
+      <g:ref if="intValue" queued="1" name="intValue"/>
+      <g:ref if="floatValue" queued="1" name="floatValue"/>
+      <g:ref if="dateValue" queued="1" name="dateValue"/>
+      <g:ref default="" queued="1" name="dateTimeValue"/>
+    </g:choice>
+  </g:production>
+  <g:production queued="1" name="rangeOperator">
+    <g:choice queued="1">
+      <g:string if="ge" queued="1">ge</g:string>
+      <g:string if="gt" queued="1">gt</g:string>
+      <g:string if="le" queued="1">le</g:string>
+      <g:string default="" queued="1">lt</g:string>
+    </g:choice>
+  </g:production>
+  <g:production queued="1" name="distanceWeightParam">
+    <g:string queued="1">distance-weight</g:string>
+    <g:string>=</g:string>
+    <g:ref name="floatValue"/>
+  </g:production>
+  <g:production queued="1" name="langParam">
+    <g:string queued="1">lang</g:string>
+    <g:string>=</g:string>
+    <g:ref name="langValue"/>
+  </g:production>
+  <g:production queued="1" name="collationParam">
+    <g:string queued="1">collation</g:string>
+    <g:string>=</g:string>
+    <g:ref name="stringValue"/>
+  </g:production>
+  <g:production queued="1" name="minOccursParam">
+    <g:choice queued="1">
+      <g:string if="min" queued="1">min</g:string>
+      <g:string default="" queued="1">minOccurs</g:string>
+    </g:choice>
+    <g:string>=</g:string>
+    <g:ref name="intValue"/>
+  </g:production>
+  <g:production queued="1" name="maxOccursParam">
+    <g:choice queued="1">
+      <g:string if="max" queued="1">max</g:string>
+      <g:string default="" queued="1">maxOccurs</g:string>
+    </g:choice>
+    <g:string>=</g:string>
+    <g:ref name="intValue"/>
+  </g:production>
+  <g:production queued="1" name="weightParam">
+    <g:string queued="1">weight</g:string>
+    <g:string>=</g:string>
+    <g:ref name="floatValue"/>
+  </g:production>
+  <g:production queued="1" name="proximityParam">
+    <g:choice queued="1">
+      <g:string if="p" queued="1">p</g:string>
+      <g:string default="" queued="1">proximity</g:string>
+    </g:choice>
+    <g:string>=</g:string>
+    <g:ref name="intValue"/>
+  </g:production>
+  <g:production queued="1" name="orderParam">
+    <g:choice queued="1">
+      <g:string if="ordered" queued="1">ordered</g:string>
+      <g:string default="" queued="1">unordered</g:string>
+    </g:choice>
+  </g:production>
+  <g:production queued="1" name="depthParam">
+    <g:choice queued="1">
+      <g:string if="infinity" queued="1">infinity</g:string>
+      <g:string default="" queued="1">1</g:string>
+    </g:choice>
+  </g:production>
+  <g:production queued="1" name="geospatialExpr">
+    <g:ref queued="1" name="inExpr"/>
+    <g:choice>
+      <g:string if="geo" queued="1">geo</g:string>
+      <g:string default="" queued="1">geospatial</g:string>
+    </g:choice>
+    <g:string>(</g:string>
+    <g:ref name="regionValue"/>
+    <g:zeroOrMore>
+      <g:string if="," queued="1">,</g:string>
+      <g:ref name="geoParam"/>
+    </g:zeroOrMore>
+    <g:string queued="1">)</g:string>
+  </g:production>
+  <g:production queued="1" name="pointExpr">
+    <g:choice queued="1">
+      <g:string if="POINT" queued="1">POINT</g:string>
+      <g:string default="" queued="1">PT</g:string>
+    </g:choice>
+    <g:string>(</g:string>
+    <g:ref name="pointValue"/>
+    <g:string>)</g:string>
+  </g:production>
+  <g:production queued="1" name="multiPointExpr">
+    <g:choice queued="1">
+      <g:string if="MULTIPOINT" queued="1">MULTIPOINT</g:string>
+      <g:string default="" queued="1">MPT</g:string>
+    </g:choice>
+    <g:string>(</g:string>
+    <g:ref name="pointValue"/>
+    <g:zeroOrMore>
+      <g:string if="," queued="1">,</g:string>
+      <g:ref name="pointValue"/>
+    </g:zeroOrMore>
+    <g:string queued="1">)</g:string>
+  </g:production>
+  <g:production queued="1" name="lineStringExpr">
+    <g:choice queued="1">
+      <g:string if="LINESTRING" queued="1">LINESTRING</g:string>
+      <g:string default="" queued="1">LS</g:string>
+    </g:choice>
+    <g:string>(</g:string>
+    <g:ref name="pointValue"/>
+    <g:zeroOrMore>
+      <g:string if="," queued="1">,</g:string>
+      <g:ref name="pointValue"/>
+    </g:zeroOrMore>
+    <g:string queued="1">)</g:string>
+  </g:production>
+  <g:production queued="1" name="multiLineStringExpr">
+    <g:choice queued="1">
+      <g:string if="MULTILINESTRING" queued="1">MULTILINESTRING</g:string>
+      <g:string default="" queued="1">MLS</g:string>
+    </g:choice>
+    <g:string>(</g:string>
+    <g:string>)</g:string>
+  </g:production>
+  <g:production queued="1" name="polygonExpr">
+    <g:choice queued="1">
+      <g:string if="POLYGON" queued="1">POLYGON</g:string>
+      <g:string default="" queued="1">PG</g:string>
+    </g:choice>
+    <g:string>(</g:string>
+    <g:ref name="polygonValue"/>
+    <g:zeroOrMore>
+      <g:string if="," queued="1">,</g:string>
+      <g:ref name="polygonValue"/>
+    </g:zeroOrMore>
+    <g:string queued="1">)</g:string>
+  </g:production>
+  <g:production queued="1" name="multiPolygonExpr">
+    <g:choice queued="1">
+      <g:string if="MULTIPOLYGON" queued="1">MULTIPOLYGON</g:string>
+      <g:string default="" queued="1">MPG</g:string>
+    </g:choice>
+    <g:string>(</g:string>
+    <g:ref name="polygonValue"/>
+    <g:zeroOrMore>
+      <g:string if="," queued="1">,</g:string>
+      <g:ref name="polygonValue"/>
+    </g:zeroOrMore>
+    <g:string queued="1">)</g:string>
+  </g:production>
+  <g:production queued="1" name="geometryCollectionExpr">
+    <g:choice queued="1">
+      <g:string if="GEOMETRYCOLLECTION" queued="1">GEOMETRYCOLLECTION</g:string>
+      <g:string default="" queued="1">GC</g:string>
+    </g:choice>
+    <g:string>(</g:string>
+    <g:zeroOrMore>
+      <g:string if="," queued="1">,</g:string>
+      <g:choice>
+        <g:ref if="POINT PT" queued="1" name="pointExpr"/>
+        <g:ref if="MPT MULTIPOINT" queued="1" name="multiPointExpr"/>
+        <g:ref if="LINESTRING LS" queued="1" name="lineStringExpr"/>
+        <g:ref if="MLS MULTILINESTRING" queued="1" name="multiLineStringExpr"/>
+        <g:ref if="PG POLYGON" queued="1" name="polygonExpr"/>
+        <g:ref default="" queued="1" name="multiPolygonExpr"/>
+      </g:choice>
+    </g:zeroOrMore>
+    <g:string queued="1">)</g:string>
+  </g:production>
+  <g:production queued="1" name="regionValue">
+    <g:choice queued="1">
+      <g:ref if="POINT PT" queued="1" name="pointExpr"/>
+      <g:ref if="MPT MULTIPOINT" queued="1" name="multiPointExpr"/>
+      <g:ref if="LINESTRING LS" queued="1" name="lineStringExpr"/>
+      <g:ref if="MLS MULTILINESTRING" queued="1" name="multiLineStringExpr"/>
+      <g:ref if="PG POLYGON" queued="1" name="polygonExpr"/>
+      <g:ref if="MPG MULTIPOLYGON" queued="1" name="multiPolygonExpr"/>
+      <g:ref default="" queued="1" name="geometryCollectionExpr"/>
+    </g:choice>
+  </g:production>
+  <?TOKENS?>
+  <g:production name="langValue">
+    <g:ref name="ALPHA"/>
+    <g:ref name="ALPHA"/>
+    <g:optional>
+      <g:string>-</g:string>
+      <g:ref name="ALPHA"/>
+      <g:ref name="ALPHA"/>
+    </g:optional>
+  </g:production>
+  <g:production name="lineStringValue">
+    <g:string>(</g:string>
+    <g:ref name="pointValue"/>
+    <g:zeroOrMore>
+      <g:string>,</g:string>
+      <g:ref name="pointValue"/>
+    </g:zeroOrMore>
+    <g:string>)</g:string>
+  </g:production>
+  <g:production name="polygonValue">
+    <g:string>(</g:string>
+    <g:ref name="pointValue"/>
+    <g:zeroOrMore>
+      <g:string>,</g:string>
+      <g:ref name="pointValue"/>
+    </g:zeroOrMore>
+    <g:string>)</g:string>
+  </g:production>
+  <g:production name="pointValue">
+    <g:oneOrMore>
+      <g:ref name="DIGIT"/>
+    </g:oneOrMore>
+    <g:ref name="SP"/>
+    <g:oneOrMore>
+      <g:ref name="DIGIT"/>
+    </g:oneOrMore>
+  </g:production>
+  <g:production name="inExpr">
+    <g:choice>
+      <g:sequence>
+        <g:choice>
+          <g:ref name="internalPropertyName"/>
+          <g:ref name="propertyName"/>
+        </g:choice>
+        <g:string>:</g:string>
+      </g:sequence>
+      <g:sequence>
+        <g:ref name="DQUOTE"/>
+        <g:choice>
+          <g:ref name="internalPropertyName"/>
+          <g:ref name="propertyName"/>
+        </g:choice>
+        <g:ref name="DQUOTE"/>
+        <g:string>:</g:string>
+      </g:sequence>
+    </g:choice>
+  </g:production>
+  <g:production name="internalPropertyName">
+    <g:ref name="propertyName"/>
+    <g:string>.</g:string>
+    <g:ref name="propertyName"/>
+  </g:production>
+  <g:production name="propertyName">
+    <g:ref name="ALPHA"/>
+    <g:zeroOrMore>
+      <g:choice>
+        <g:ref name="ALPHA"/>
+        <g:ref name="DIGIT"/>
+      </g:choice>
+    </g:zeroOrMore>
+  </g:production>
+  <g:production name="stringValue">
+    <g:ref name="DQUOTE"/>
+    <g:oneOrMore>
+      <g:choice>
+        <g:string>!</g:string>
+        <g:charClass>
+          <g:charRange minChar="#" maxChar="'"/>
+        </g:charClass>
+        <g:charClass>
+          <g:charRange minChar="*" maxChar="+"/>
+        </g:charClass>
+        <g:charClass>
+          <g:charRange minChar="-" maxChar="9"/>
+        </g:charClass>
+        <g:charClass>
+          <g:charRange minChar=";" maxChar="&lt;"/>
+        </g:charClass>
+        <g:charClass>
+          <g:charCodeRange minValue="3E" maxValue="10FFFF"/>
+        </g:charClass>
+      </g:choice>
+    </g:oneOrMore>
+    <g:ref name="DQUOTE"/>
+  </g:production>
+  <g:production name="floatValue" whitespace-spec="explicit">
+    <g:optional>
+      <g:choice>
+        <g:string>-</g:string>
+        <g:string>+</g:string>
+      </g:choice>
+    </g:optional>
+    <g:zeroOrMore>
+      <g:ref name="DIGIT"/>
+    </g:zeroOrMore>
+    <g:string>.</g:string>
+    <g:oneOrMore>
+      <g:ref name="DIGIT"/>
+    </g:oneOrMore>
+  </g:production>
+  <g:production name="intValue" whitespace-spec="explicit">
+    <g:optional>
+      <g:choice>
+        <g:string>-</g:string>
+        <g:string>+</g:string>
+      </g:choice>
+    </g:optional>
+    <g:oneOrMore>
+      <g:ref name="DIGIT"/>
+    </g:oneOrMore>
+  </g:production>
+  <g:production name="dateTimeValue">
+    <g:ref name="dateValue"/>
+    <g:string>T</g:string>
+    <g:ref name="timeValue"/>
+  </g:production>
+  <g:production name="timeValue">
+    <g:ref name="hour"/>
+    <g:string>:</g:string>
+    <g:ref name="minute"/>
+    <g:string>:</g:string>
+    <g:ref name="second"/>
+    <g:optional>
+      <g:string>Z</g:string>
+    </g:optional>
+  </g:production>
+  <g:production name="dateValue">
+    <g:ref name="year"/>
+    <g:string>-</g:string>
+    <g:ref name="month"/>
+    <g:string>-</g:string>
+    <g:ref name="day"/>
+  </g:production>
+  <g:production name="year">
+    <g:ref name="DIGIT"/>
+    <g:ref name="DIGIT"/>
+    <g:ref name="DIGIT"/>
+    <g:oneOrMore>
+      <g:ref name="DIGIT"/>
+    </g:oneOrMore>
+  </g:production>
+  <g:production name="month">
+    <g:choice>
+      <g:sequence>
+        <g:string>0</g:string>
+        <g:ref name="DIGIT"/>
+      </g:sequence>
+      <g:sequence>
+        <g:string>1</g:string>
+        <g:charClass>
+          <g:charRange minChar="0" maxChar="2"/>
+        </g:charClass>
+      </g:sequence>
+    </g:choice>
+  </g:production>
+  <g:production name="day">
+    <g:choice>
+      <g:sequence>
+        <g:charClass>
+          <g:charRange minChar="0" maxChar="2"/>
+        </g:charClass>
+        <g:ref name="DIGIT"/>
+      </g:sequence>
+      <g:sequence>
+        <g:string>3</g:string>
+        <g:charClass>
+          <g:charRange minChar="0" maxChar="1"/>
+        </g:charClass>
+      </g:sequence>
+    </g:choice>
+  </g:production>
+  <g:production name="hour">
+    <g:choice>
+      <g:sequence>
+        <g:charClass>
+          <g:charRange minChar="0" maxChar="1"/>
+        </g:charClass>
+        <g:ref name="DIGIT"/>
+      </g:sequence>
+      <g:sequence>
+        <g:string>2</g:string>
+        <g:charClass>
+          <g:charRange minChar="0" maxChar="3"/>
+        </g:charClass>
+      </g:sequence>
+    </g:choice>
+  </g:production>
+  <g:production name="minute">
+    <g:charClass>
+      <g:charRange minChar="0" maxChar="5"/>
+    </g:charClass>
+    <g:ref name="DIGIT"/>
+  </g:production>
+  <g:production name="second">
+    <g:charClass>
+      <g:charRange minChar="0" maxChar="5"/>
+    </g:charClass>
+    <g:ref name="DIGIT"/>
+  </g:production>
+  <g:production name="DIGIT">
+    <g:charClass>
+      <g:charRange minChar="0" maxChar="9"/>
+    </g:charClass>
+  </g:production>
+  <g:production name="DQUOTE">
+    <g:string>&quot;</g:string>
+  </g:production>
+  <g:production name="SP" whitespace-spec="definition">
+    <g:oneOrMore>
+      <g:charClass>
+        <g:charCode value="9"/>
+        <g:charCode value="A"/>
+        <g:charCode value="D"/>
+        <g:charCode value="20"/>
+      </g:charClass>
+    </g:oneOrMore>
+  </g:production>
+  <g:production name="ALPHA">
+    <g:charClass>
+      <g:charRange minChar="A" maxChar="Z"/>
+      <g:charRange minChar="a" maxChar="z"/>
+    </g:charClass>
+  </g:production>
+  <g:production name="EOF">
+    <g:endOfFile/>
+  </g:production>
+  <g:preference>
+    <g:ref name="intValue"/>
+    <g:ref name="stringValue"/>
+  </g:preference>
+  <g:preference>
+    <g:ref name="floatValue"/>
+    <g:ref name="stringValue"/>
+  </g:preference>
+  <g:preference>
+    <g:ref name="dateValue"/>
+    <g:ref name="stringValue"/>
+  </g:preference>
+  <g:preference>
+    <g:string>collation</g:string>
+    <g:ref name="stringValue"/>
+  </g:preference>
+  <g:preference>
+    <g:string>maxOccurs</g:string>
+    <g:ref name="stringValue"/>
+  </g:preference>
+  <g:preference>
+    <g:string>minOccurs</g:string>
+    <g:ref name="stringValue"/>
+  </g:preference>
+  <g:preference>
+    <g:string>weight</g:string>
+    <g:ref name="stringValue"/>
+  </g:preference>
+</g:grammar>

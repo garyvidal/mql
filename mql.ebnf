@@ -97,7 +97,7 @@ inExpr
 internalPropertyName
          ::= propertyName '.' propertyName
 propertyName
-         ::= ( ALPHA (ALPHA | DIGIT )*)	 
+         ::= ( ALPHA ('.'| '_'| ALPHA | DIGIT )*)	 
 stringValue
          ::= DQUOTE ( '!' | [#-'] | [*-+] | [--9] | [;-<] | [#x3E-#x10FFFF] )+ DQUOTE
 floatValue
